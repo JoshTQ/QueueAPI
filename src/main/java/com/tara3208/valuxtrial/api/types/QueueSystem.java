@@ -19,6 +19,7 @@ import com.tara3208.valuxtrial.main.Queues;
  *
  * Modified by DaeM0nS on 6/03/19.
  * Line61 : Change server (needed to be final) to serverInfo (private field)
+ * Change BungeeCord to ProxyServer
  */
 public class QueueSystem {
 

@@ -29,7 +29,6 @@ public class Queues extends Plugin {
 
     public static String message = "";
     public static int size = 2;
-    public static int players = 0;
     public static List servers;
     public static List serverssize;
     public static ChatMessageType chatMessageType;
