@@ -5,26 +5,32 @@ import com.tara3208.valuxtrial.api.managers.QueueManager;
 import com.tara3208.valuxtrial.api.types.QueueSystem;
 import com.tara3208.valuxtrial.main.events.Connection;
 import com.tara3208.valuxtrial.main.events.Disconnect;
-import net.md_5.bungee.BungeeCord;
+
 import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
 
-import java.awt.*;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Tara3208 on 7/15/17.
  * This has been created privately.
  * Copyright applies. Breach of this is not warranted
+ *
+ * Modified by DaeM0nS on 6/03/19.
+ * Add serversize list, change the line 81 to set specified size for each servers
+ * Add serversize in the config file
+ * Add some test fields in the default config (lists)
  */
 public class Queues extends Plugin {
 
     public static String message = "";
     public static int size = 2;
-    public static int players = 0;
     public static List servers;
+    public static List serverssize;
     public static ChatMessageType chatMessageType;
     private static Queues instance;
     private static QueueManager queueManager;
@@ -58,23 +64,24 @@ public class Queues extends Plugin {
         message = null;
         size = -1;
         servers = null;
+        serverssize = null;
         chatMessageType = null;
     }
 
     private void registerListeners() {
-        BungeeCord.getInstance().getPluginManager().registerListener(this, new Connection());
-        BungeeCord.getInstance().getPluginManager().registerListener(this, new Disconnect());
+        ProxyServer.getInstance().getPluginManager().registerListener(this, new Connection());
+        ProxyServer.getInstance().getPluginManager().registerListener(this, new Disconnect());
     }
 
     private void registerQueues() {
-        BungeeCord.getInstance().getConsole().sendMessage(new TextComponent("Successfully added a queue for: "));
+        ProxyServer.getInstance().getConsole().sendMessage(new TextComponent("Successfully added a queue for: "));
 
         Configuration configuration = FileUtils.getConfiguration("config.yml");
 
         configuration.getStringList("servers").forEach(serverName -> {
-            QueueSystem hub = new QueueSystem(BungeeCord.getInstance().getServerInfo(serverName), TimeUnit.SECONDS, size, players);
+            QueueSystem hub = new QueueSystem(ProxyServer.getInstance().getServerInfo(serverName), TimeUnit.SECONDS, size, Integer.valueOf(this.serverssize.get(this.servers.indexOf(serverName)).toString()));
             getQueueManagement().addQueue(hub);
-            BungeeCord.getInstance().getConsole().sendMessage(new TextComponent("- " + serverName));
+            ProxyServer.getInstance().getConsole().sendMessage(new TextComponent("- " + serverName));
         });
     }
 
@@ -106,18 +113,22 @@ public class Queues extends Plugin {
             this.size = configuration.getInt("delay");
         }
 
-        if (configuration.get("players") == null) {
-            configuration.set("players", 0);
-            this.players = 0;
-        } else {
-            this.players = configuration.getInt("players");
-        }
-
         // Servers
         if (configuration.get("servers") == null) {
-            configuration.set("servers", "[]");
+            configuration.set("servers", new String[]{"Server1","Server2","Server3"});
             this.servers = null;
+        }else{
+            this.servers = configuration.getStringList("servers");
         }
+
+        // ServersSizes
+        if (configuration.get("serverssize") == null) {
+            configuration.set("serverssize", new String[]{"100","50","50"});
+            this.serverssize = null;
+        }else{
+            this.serverssize = configuration.getStringList("serverssize");
+        }
+
 
         if (configuration.get("messageType") == null) {
             configuration.set("messageType", "CHAT");
