@@ -1,20 +1,24 @@
 package com.tara3208.valuxtrial.api.types;
 
-import com.tara3208.valuxtrial.main.Queues;
-import net.md_5.bungee.BungeeCord;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.concurrent.TimeUnit;
+
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.concurrent.TimeUnit;
+import com.tara3208.valuxtrial.main.Queues;
 
 /**
  * Created by Tara3208 on 7/15/17.
  * This has been created privately.
  * Copyright applies. Breach of this is not warranted
+ *
+ * Modified by DaeM0nS on 6/03/19.
+ * Line61 : Change server (needed to be final) to serverInfo (private field)
  */
 public class QueueSystem {
 
@@ -53,7 +57,7 @@ public class QueueSystem {
                     proxiedPlayer = (ProxiedPlayer) toMove;
                 }
 
-                proxiedPlayer.connect(server);
+                proxiedPlayer.connect(serverInfo);
 
                 queue.remove(proxiedPlayer);
 
@@ -63,7 +67,7 @@ public class QueueSystem {
     }
 
     public void addToQueue(ProxiedPlayer proxiedPlayer) {
-        if (players >= BungeeCord.getInstance().getPlayers().size()) {
+        if (players >= ProxyServer.getInstance().getPlayers().size()) {
             if (queue.contains(proxiedPlayer)) return;
 
             queue.add(proxiedPlayer);
